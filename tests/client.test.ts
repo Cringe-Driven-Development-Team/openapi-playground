@@ -151,6 +151,22 @@ test("refresh 401 → исходный 401, один вызов refresh", async 
   expect(stub.requests.filter((r) => new URL(r.url).pathname === "/auth/refresh")).toHaveLength(1);
 });
 
+test("повтор снова 401 → исходный ответ повтора, ровно один refresh", async () => {
+  const stub = stubFetch(
+    Response.json({ code: "unauthorized", message: "expired" }, { status: 401 }),
+    withAuth("Bearer new", { status: 204 }),
+    Response.json({ code: "unauthorized", message: "still no" }, { status: 401 }),
+  );
+  const api = createApi({ baseUrl: BASE, fetch: stub.fetch });
+
+  const { error, response } = await api.GET("/users/me");
+
+  expect(error?.message).toBe("still no");
+  expect(response.status).toBe(401);
+  expect(stub.requests).toHaveLength(3);
+  expect(stub.requests.filter((r) => new URL(r.url).pathname === "/auth/refresh")).toHaveLength(1);
+});
+
 test("401 у /auth/* не запускает refresh", async () => {
   const stub = stubFetch(Response.json({ code: "invalid_credentials", message: "nope" }, { status: 401 }));
   const api = createApi({ baseUrl: BASE, fetch: stub.fetch });
