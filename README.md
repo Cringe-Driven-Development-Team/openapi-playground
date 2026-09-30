@@ -74,6 +74,10 @@ bun run demo
 
 Пункт «лишнее поле в `body`» openapi-fetch 0.17.0 не ловит: `body` выводится через дженерик, и excess property check не срабатывает. В каталоге это задокументированная не-ошибка, а ориентир для `@my/openapi`: здесь пакет может быть строже.
 
+## Браузер: CORS
+
+Если клиент работает в браузере, чтение заголовка `Authorization` из ответа требует `Access-Control-Expose-Headers: Authorization` на бэке, а `credentials: "include"` — конкретный `Access-Control-Allow-Origin` (не `*`) и `Access-Control-Allow-Credentials: true`.
+
 ## Почему TypeScript 5.9
 
 У `openapi-typescript` `peerDependencies: { typescript: "^5.x" }`, он строит типы через `ts.factory` и на TypeScript 7 падает ([openapi-typescript#2841](https://github.com/openapi-ts/openapi-typescript/issues/2841)). Поэтому в репе закреплён `typescript` 5.9.3, а у фронта и у `@my/openapi` TypeScript 7.
