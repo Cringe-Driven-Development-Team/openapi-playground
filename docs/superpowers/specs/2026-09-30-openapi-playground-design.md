@@ -152,6 +152,11 @@ Access-токен бэк отдаёт в заголовке ответа `Author
   MOCK_BASE_URL, fetch, credentials: "include" })` с подключённым middleware;
   `credentials: "include"` — чтобы cookie refresh-сессии уходили на бэк; для бэка
   `API_BASE_URL=http://localhost:8080/api/v1`.
+- Ограничение bun: в браузере HttpOnly-cookie refresh-сессии шлёт сам браузер
+  благодаря `credentials: "include"`, а у `fetch` в bun нет хранилища cookie. Поэтому
+  против настоящего бэка в bun повтор после `401` не восстановит сессию: `/auth/refresh`
+  уйдёт без cookie и получит `401`. В тестах и против мока это не проявляется; README
+  (Task 5) объясняет это ограничение.
 - Middleware авторизации (замыкание на хранилище токена):
   - `onResponse`: непустой заголовок `Authorization` в ответе → запомнить токен;
   - `onRequest`: токен есть → `Authorization: Bearer {token}`;

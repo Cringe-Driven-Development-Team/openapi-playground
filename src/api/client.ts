@@ -18,7 +18,9 @@ export function createApi(options: { baseUrl?: string; fetch?: typeof fetch } = 
   const client = createClient<paths>({
     baseUrl: options.baseUrl ?? (process.env.API_BASE_URL || MOCK_BASE_URL),
     fetch: fetchImpl,
-    // refresh-сессия живёт в cookie — браузер должен её слать.
+    // В браузере cookie refresh-сессии (HttpOnly) шлёт сам браузер благодаря credentials: "include".
+    // У fetch в bun нет хранилища cookie, поэтому против настоящего бэка в bun повтор после 401
+    // не восстановит сессию: refresh уйдёт без cookie и получит 401. В тестах и против мока это не проявляется.
     credentials: "include",
   });
 
