@@ -1,0 +1,23 @@
+{
+  "name": "openapi-playground",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "bun": ">=1.4.0"
+  },
+  "scripts": {
+    "apidog": "bun scripts/apidog.ts",
+    "generate": "openapi-typescript spec/openapi.json -o src/api/schema.d.ts",
+    "demo": "bun src/demo.ts",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.schema.json",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3"
+  }
+}
