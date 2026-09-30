@@ -9,7 +9,7 @@
     "apidog": "bun scripts/apidog.ts",
     "generate": "openapi-typescript spec/openapi.json -o src/api/schema.d.ts",
     "demo": "bun src/demo.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.schema.json",
     "test": "bun test"
   },
   "dependencies": {

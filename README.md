@@ -78,7 +78,7 @@ bun run demo
 
 У `openapi-typescript` `peerDependencies: { typescript: "^5.x" }`, он строит типы через `ts.factory` и на TypeScript 7 падает ([openapi-typescript#2841](https://github.com/openapi-ts/openapi-typescript/issues/2841)). Поэтому в репе закреплён `typescript` 5.9.3, а у фронта и у `@my/openapi` TypeScript 7.
 
-В `tsconfig.json` включён `skipLibCheck: true` из-за типов `@redocly/openapi-core` внутри openapi-typescript.
+В `tsconfig.json` включён `skipLibCheck: true` из-за типов `@redocly/openapi-core` внутри openapi-typescript; сгенерированный `schema.d.ts` проверяется отдельно (`tsconfig.schema.json`), без `skipLibCheck` — это приёмка генератора в ветке `my-openapi`.
 
 ## Ветка `my-openapi`
 

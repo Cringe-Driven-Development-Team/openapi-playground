@@ -1,0 +1,4 @@
+{
+  "compilerOptions": { "strict": true, "noEmit": true, "target": "ESNext", "types": [] },
+  "files": ["src/api/schema.d.ts"]
+}
