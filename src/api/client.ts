@@ -14,10 +14,9 @@ function tokenFrom(response: Response): string | undefined {
 }
 
 export function createApi(options: { baseUrl?: string; fetch?: typeof fetch } = {}): Client<paths> {
-  const fetchImpl = options.fetch ?? globalThis.fetch;
   const client = createClient<paths>({
     baseUrl: options.baseUrl ?? (process.env.API_BASE_URL || MOCK_BASE_URL),
-    fetch: fetchImpl,
+    fetch: options.fetch,
     // В браузере cookie refresh-сессии (HttpOnly) шлёт сам браузер благодаря credentials: "include".
     // У fetch в bun нет хранилища cookie, поэтому против настоящего бэка в bun повтор после 401
     // не восстановит сессию: refresh уйдёт без cookie и получит 401. В тестах и против мока это не проявляется.
@@ -36,7 +35,7 @@ export function createApi(options: { baseUrl?: string; fetch?: typeof fetch } = 
       return request;
     },
 
-    async onResponse({ request, response, schemaPath, options }) {
+    async onResponse({ request, response, schemaPath, options: merged }) {
       const original = pending.get(request);
       pending.delete(request);
 
@@ -45,15 +44,18 @@ export function createApi(options: { baseUrl?: string; fetch?: typeof fetch } = 
 
       if (response.status !== 401 || schemaPath.startsWith("/auth/") || !original) return response;
 
-      const refreshed = await fetchImpl(
-        new Request(options.baseUrl + "/auth/refresh", { method: "POST", credentials: "include" }),
+      // Refresh и повтор идут через тот же fetch, что и сам клиент (merged.fetch).
+      // Single-flight нет: параллельные 401 запускают каждый свой refresh. Если бэк ротирует
+      // refresh-токены, в своём клиенте это стоит сериализовать. Неудачный refresh оставляет старый токен.
+      const refreshed = await merged.fetch(
+        new Request(merged.baseUrl + "/auth/refresh", { method: "POST", credentials: "include" }),
       );
       if (!refreshed.ok) return response;
 
       const renewed = tokenFrom(refreshed);
       if (renewed) token = renewed;
       if (token) original.headers.set("Authorization", BEARER + token);
-      return fetchImpl(original);
+      return merged.fetch(original);
     },
   };
 
