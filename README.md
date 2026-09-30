@@ -16,6 +16,16 @@ bun run demo
 
 Нужен bun >= 1.4.0. `demo` ходит в облачный мок Apidog: токен и локальный бэк не нужны.
 
+## Как это работает
+
+![Схема: openapi-typescript делает из spec/openapi.json типы schema.d.ts, openapi-fetch по ним собирает запрос и возвращает data или error](docs/flow.svg)
+
+Сверху — разработка: `openapi-typescript` один раз превращает спеку в `schema.d.ts`, в
+нём только типы. Снизу — рантайм: `openapi-fetch` получает эти типы через
+`createClient<paths>()`, собирает запрос, ходит в мок или бэк и отдаёт `data` или `error`.
+Типы стираются при сборке, поэтому в бандл попадает только `openapi-fetch`, а проверка идёт
+в `tsc` до запуска — ответы сервера в рантайме никто не сверяет со спекой.
+
 ## Шаги
 
 `apidog` → `generate` → `demo` / `typecheck` / `test`
