@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 790" width="1200" height="790" role="img" aria-label="openapi-typescript превращает spec/openapi.json в типы schema.d.ts во время разработки; openapi-fetch в рантайме собирает по ним запрос, ходит в мок или бэк и возвращает data или error проекту-потребителю">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="790" fill="#ffffff"/>
+
+  <g font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" fill="#0f172a">
+    <text x="20" y="32" font-size="18" font-weight="700">openapi-typescript + openapi-fetch на нашем контракте</text>
+
+    <!-- Зона 1: разработка -->
+    <text x="20" y="62" font-size="12" font-weight="700" fill="#7c3aed" letter-spacing="1">РАЗРАБОТКА — ГЕНЕРАЦИЯ ТИПОВ</text>
+
+    <!-- A: Apidog -->
+    <rect x="20" y="120" width="170" height="110" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+    <text x="105" y="160" font-size="16" font-weight="700" text-anchor="middle">Apidog</text>
+    <text x="105" y="184" font-size="12" fill="#475569" text-anchor="middle">контракт,</text>
+    <text x="105" y="201" font-size="12" fill="#475569" text-anchor="middle">ветка main</text>
+
+    <!-- A → B -->
+    <line x1="190" y1="175" x2="296" y2="175" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="243" y="163" font-size="12" font-weight="600" text-anchor="middle">bun run apidog</text>
+    <text x="243" y="193" font-size="11" fill="#475569" text-anchor="middle">export-openapi</text>
+
+    <!-- B: spec/openapi.json -->
+    <rect x="300" y="80" width="320" height="190" rx="10" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+    <text x="316" y="106" font-size="14" font-weight="700">spec/openapi.json</text>
+    <g font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11.5" fill="#1e293b">
+      <text x="316" y="134">"/notebooks/{id}": {</text>
+      <text x="330" y="152">"get": {</text>
+      <text x="344" y="170">"operationId": "getNotebook",</text>
+      <text x="344" y="188">"parameters": [{ "name": "id",</text>
+      <text x="358" y="206">"in": "path", "required": true }],</text>
+      <text x="344" y="224">"responses": { "200": → Notebook,</text>
+      <text x="358" y="242">"401", "404", "500": → Error }</text>
+    </g>
+
+    <!-- B → C -->
+    <line x1="620" y1="175" x2="746" y2="175" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#arrow-purple)"/>
+    <text x="683" y="163" font-size="12" font-weight="600" text-anchor="middle">bun run generate</text>
+    <text x="683" y="193" font-size="11" fill="#7c3aed" text-anchor="middle" font-weight="600">openapi-typescript</text>
+    <text x="683" y="208" font-size="10.5" fill="#475569" text-anchor="middle">devDependency</text>
+
+    <!-- C: schema.d.ts -->
+    <rect x="750" y="80" width="430" height="190" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+    <text x="766" y="106" font-size="14" font-weight="700">src/api/schema.d.ts</text>
+    <text x="1164" y="106" font-size="11" fill="#475569" text-anchor="end">только типы, JS нет</text>
+    <g font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11.5" fill="#1e293b">
+      <text x="766" y="134">export interface paths {</text>
+      <text x="780" y="152">"/notebooks/{id}": { get: operations["getNotebook"] }</text>
+      <text x="766" y="170">}</text>
+      <text x="766" y="192">getNotebook: {</text>
+      <text x="780" y="210">parameters: { path: { id: string } };</text>
+      <text x="780" y="228">responses: { 200: … Notebook;</text>
+      <text x="780" y="246">401 | 404 | 500: … Error };</text>
+      <text x="766" y="262">}</text>
+    </g>
+
+    <!-- Разделитель -->
+    <line x1="20" y1="306" x2="1180" y2="306" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <text x="20" y="296" font-size="11.5" fill="#475569">типы стираются при сборке — в бандл попадает только openapi-fetch</text>
+
+    <!-- C → D (import type) -->
+    <polyline points="960,270 960,322 220,322 220,352" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="7 4" marker-end="url(#arrow-purple)"/>
+    <text x="590" y="340" font-size="12" fill="#7c3aed" font-weight="600" text-anchor="middle">import type { paths } from "./schema"  →  createClient&lt;paths&gt;()</text>
+
+    <!-- Зона 2: рантайм -->
+    <text x="1180" y="296" font-size="12" font-weight="700" fill="#2563eb" letter-spacing="1" text-anchor="end">РАНТАЙМ — ЗАПРОС</text>
+
+    <!-- D: потребитель -->
+    <rect x="20" y="356" width="420" height="220" rx="10" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+    <text x="36" y="382" font-size="14" font-weight="700">Проект-потребитель</text>
+    <text x="424" y="382" font-size="11" fill="#475569" text-anchor="end">src/demo.ts, страницы фронта</text>
+    <g font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11.5" fill="#1e293b">
+      <text x="36" y="410">const api = createClient&lt;paths&gt;({ baseUrl })</text>
+      <text x="36" y="428">api.use(auth)<tspan x="256">// Bearer + refresh</tspan></text>
+      <text x="36" y="452">const { data, error } = await api.GET(</text>
+      <text x="50" y="470">"/notebooks/{id}",</text>
+      <text x="50" y="488">{ params: { path: { id } } })</text>
+      <text x="36" y="512">if (error) show(error.code)<tspan x="256">// Error</tspan></text>
+      <text x="36" y="530">else render(data.name)<tspan x="256">// Notebook</tspan></text>
+    </g>
+    <text x="36" y="558" font-size="11" fill="#475569">путь, params, body и типы data/error — из schema.d.ts</text>
+
+    <!-- D ⇄ E -->
+    <line x1="440" y1="430" x2="556" y2="430" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+    <text x="498" y="420" font-size="12" font-weight="600" text-anchor="middle">api.GET(path, init)</text>
+    <line x1="556" y1="500" x2="444" y2="500" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+    <text x="498" y="490" font-size="12" font-weight="600" text-anchor="middle">{ data } | { error }</text>
+    <text x="498" y="518" font-size="11" fill="#475569" text-anchor="middle">+ response</text>
+
+    <!-- E: openapi-fetch -->
+    <rect x="560" y="356" width="320" height="220" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+    <text x="576" y="382" font-size="14" font-weight="700" fill="#1d4ed8">openapi-fetch</text>
+    <text x="864" y="382" font-size="11" fill="#475569" text-anchor="end">~6 кБ, dependency</text>
+    <text x="576" y="410" font-size="12.5">1. путь + params → /notebooks/42, query</text>
+    <text x="576" y="434" font-size="12.5">2. body → JSON, Content-Type</text>
+    <text x="576" y="458" font-size="12.5">3. middleware onRequest: Authorization</text>
+    <text x="576" y="482" font-size="12.5">4. fetch(request)</text>
+    <text x="576" y="506" font-size="12.5">5. onResponse: токен из заголовка, 401 → refresh</text>
+    <text x="576" y="530" font-size="12.5">6. 2xx → data, иначе → error</text>
+    <text x="576" y="558" font-size="11" fill="#475569">рантайм ничего не проверяет по спеке</text>
+
+    <!-- E ⇄ F -->
+    <line x1="880" y1="430" x2="976" y2="430" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="928" y="406" font-size="11" font-weight="600" text-anchor="middle">GET</text>
+    <text x="928" y="421" font-size="11" font-weight="600" text-anchor="middle">/notebooks/42</text>
+    <line x1="976" y1="500" x2="884" y2="500" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="928" y="490" font-size="11" font-weight="600" text-anchor="middle">200 JSON</text>
+
+    <!-- F: сервер -->
+    <rect x="980" y="396" width="200" height="140" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+    <text x="1080" y="428" font-size="14" font-weight="700" text-anchor="middle">Облачный мок</text>
+    <text x="1080" y="446" font-size="14" font-weight="700" text-anchor="middle">Apidog</text>
+    <text x="1080" y="472" font-size="11.5" fill="#475569" text-anchor="middle">…/1382426-1388508-default</text>
+    <text x="1080" y="498" font-size="12" text-anchor="middle">или Go API</text>
+    <text x="1080" y="516" font-size="11.5" fill="#475569" text-anchor="middle">localhost:8080/api/v1</text>
+
+    <!-- G: ловит tsc -->
+    <rect x="20" y="604" width="560" height="166" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+    <text x="36" y="630" font-size="14" font-weight="700" fill="#b91c1c">Ловит tsc — до запуска</text>
+    <g font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11.5" fill="#1e293b">
+      <text x="36" y="656">api.GET("/notebook")<tspan x="316">// пути нет</tspan></text>
+      <text x="36" y="676">api.DELETE("/notebooks/{id}", …)<tspan x="316">// метода нет</tspan></text>
+      <text x="36" y="696">api.POST("/notebooks", { body: {} })<tspan x="316">// нет name</tspan></text>
+      <text x="36" y="716">{ params: { path: { id: 42 } } }<tspan x="316">// id не string</tspan></text>
+      <text x="36" y="736">data.name без проверки error<tspan x="316">// data | undefined</tspan></text>
+    </g>
+    <text x="36" y="758" font-size="11" fill="#475569">весь каталог — src/type-errors.ts, проверяется bun run typecheck</text>
+
+    <!-- H: не ловит -->
+    <rect x="620" y="604" width="560" height="166" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+    <text x="636" y="630" font-size="14" font-weight="700" fill="#b45309">Не ловит</text>
+    <g font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="11.5" fill="#1e293b">
+      <text x="636" y="656">api.POST("/notebooks",</text>
+      <text x="650" y="676">{ body: { name: "A", color: "red" } })</text>
+    </g>
+    <text x="636" y="700" font-size="12">лишнее поле в body проходит: тело выводится через дженерик</text>
+    <text x="636" y="724" font-size="12">данные в рантайме: мок отдаёт id "17" вместо uuid,</text>
+    <text x="636" y="742" font-size="12">а POST /notebooks с {} — 201; типы описывают форму, не проверяют её</text>
+  </g>
+</svg>
