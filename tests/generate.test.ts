@@ -12,7 +12,7 @@ test("openapi-typescript: из JSON и из YAML получается один �
   expect(json).toContain('"/notebooks/{id}"');
 });
 
-test("bun run generate даёт то же, что Node API", async () => {
+test("закоммиченный schema.d.ts совпадает с выводом Node API", async () => {
   const json = await generate("spec/openapi.json");
   const cli = await Bun.file("src/api/schema.d.ts").text();
   expect(cli).toContain(json);
